@@ -1,0 +1,46 @@
+parameters:
+    asoc_compassomator.bundle_finder.class: Asoc\CompassomatorBundle\Compassomator\BundleFinder
+    asoc_compassomator.bundle_finder.config_rb_dir: Resources
+    asoc_compassomator.bundle_finder.config_rb_name: config.rb
+    asoc_compassomator.bundle_finder.bundles_dir: %kernel.root_dir%/../web/bundles/
+    # the directory where the css/js/image files that go through assetic using the twig helper functions
+    # is hard coded in \Symfony\Bundle\AsseticBundle\Factory\Loader\AsseticHelperFormulaLoader
+    asoc_compassomator.bundle_finder.assetic_css_root: %assetic.write_to%/css
+    asoc_compassomator.process_manager.class: Asoc\CompassomatorBundle\Compassomator\ProcessManager
+    asoc_compassomator.process_manager.run_dir: %kernel.cache_dir%/../compassomator
+    asoc_compassomator.process_runner.class: Asoc\CompassomatorBundle\Compassomator\ProcessRunner
+    asoc_compassomator.cache_clearer.class: Asoc\CompassomatorBundle\CacheClearer\CacheClearer
+    asoc_compassomator.cache_warmer.class: Asoc\CompassomatorBundle\CacheWarmer\CacheWarmer
+
+services:
+    asoc_compassomator.cache_clearer:
+        class: %asoc_compassomator.cache_clearer.class%
+        arguments:
+            - @asoc_compassomator.process_runner
+        tags:
+            - { name: kernel.cache_clearer }
+    asoc_compassomator.cache_warmer:
+        class: %asoc_compassomator.cache_warmer.class%
+        arguments:
+            - @asoc_compassomator.process_runner
+        tags:
+            # must come before the cache warmer of Asoc\AsseticTracker so it doesn't choke on non existing assetic assets
+            - { name: kernel.cache_warmer, priority: 12 }
+    asoc_compassomator.process_manager:
+        class: %asoc_compassomator.process_manager.class%
+        arguments:
+            - %asoc_compassomator.process_manager.run_dir%
+    asoc_compassomator.process_runner:
+        class: %asoc_compassomator.process_runner.class%
+        arguments:
+            - @asoc_compassomator.bundle_finder
+            - @asoc_compassomator.process_manager
+    asoc_compassomator.bundle_finder:
+        class: %asoc_compassomator.bundle_finder.class%
+        arguments:
+            - @kernel
+            - @filesystem
+            - %asoc_compassomator.bundle_finder.config_rb_dir%
+            - %asoc_compassomator.bundle_finder.config_rb_name%
+            - %asoc_compassomator.bundle_finder.bundles_dir%
+            - %asoc_compassomator.bundle_finder.assetic_css_root%
