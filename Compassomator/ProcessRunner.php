@@ -87,6 +87,8 @@ class ProcessRunner {
 	}
 
 	public function abortWatchProjects() {
+		$this->output->writeln('<comment>Stopping watch...</comment>');
+
 		// stop compass watchers
 		foreach ($this->compassProjectRoots as $bundleName => $compassProjectRoot)
 		{
@@ -122,22 +124,24 @@ class ProcessRunner {
 	}
 
 	public function watchProjects() {
+		$this->output->writeln('<info>Starting watch...</info>');
+
 		// build the compass watchers
 		foreach ($this->compassProjectRoots as $bundleName => $compassProjectRoot)
 		{
 			$name = sprintf('compass-%s-watch', $bundleName);
 
 			// start watching for changes
-			$cmd = ProcessUtils::getCompassomatorWatcher($compassProjectRoot, $this->bundleMapFile, $this->bundlePublicMapFile)->getCommandLine();
+			$process = ProcessUtils::getCompassomatorWatcher($compassProjectRoot, $this->bundleMapFile, $this->bundlePublicMapFile);
 			$this->output->write(sprintf('  > compass watch: <info>%s</info>', $bundleName));
-			$pid = $this->processManager->run($cmd, $name);
+			$pid = $this->processManager->run($process, $name);
 			$this->output->writeln(sprintf(' (PID: %d)', $pid));
 		}
 
 		// run assetic:watch
-		$cmd = ProcessUtils::getAssetic(true)->getCommandLine();
+		$process = ProcessUtils::getAssetic(true);
 		$this->output->write('  > assetic watch');
-		$pid = $this->processManager->run($cmd, 'assetic-watch');
+		$pid = $this->processManager->run($process, 'assetic-watch');
 		$this->output->writeln(sprintf(' (PID: %d)', $pid));
 	}
 

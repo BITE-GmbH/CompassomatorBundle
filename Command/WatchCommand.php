@@ -41,12 +41,10 @@ class WatchCommand extends ContainerAwareCommand
 		$this->processRunner->prepare($output);
 
 		// stopping any previous processes just to be clean
-		$output->writeln('<comment>Stopping watch...</comment>');
 		$this->processRunner->abortWatchProjects();
 
 		// if abort was not actually requested, run the watch
 		if($input->getOption('abort') !== true) {
-			$output->writeln('<info>Starting watch...</info>');
 			$this->processRunner->watchProjects();
 		}
 	}

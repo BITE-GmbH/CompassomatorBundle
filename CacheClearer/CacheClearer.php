@@ -30,6 +30,7 @@ class CacheClearer implements CacheClearerInterface {
 
 	public function run(OutputInterface $output) {
 		$this->processRunner->prepare($output);
+		$this->processRunner->abortWatchProjects();
 		$this->processRunner->cleanProjects();
 		$this->processRunner->cleanLogs();
 	}
