@@ -7,7 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ClearCommand extends ContainerAwareCommand
+class CleanCommand extends ContainerAwareCommand
 {
 	/**
 	 * @var CacheClearer
@@ -16,7 +16,7 @@ class ClearCommand extends ContainerAwareCommand
 
 	protected function configure()
     {
-        $this->setName('compassomator:clear')
+        $this->setName('compassomator:clean')
             ->setDescription('Run compass clean on all compass projects and remove logs.')
         ;
     }
