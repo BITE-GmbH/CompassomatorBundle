@@ -33,7 +33,7 @@ class BundleFinder {
 		$this->filesystem = $filesystem;
 		$this->configRbDir = $configRbDir;
 		$this->configRbName = $configRbName;
-		$this->bundlesDir = $bundlesDir;
+		$this->bundlesDir = rtrim($bundlesDir, '/');
 		$this->asseticCssRoot = $asseticCssRoot;
 	}
 

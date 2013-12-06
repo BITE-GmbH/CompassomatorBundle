@@ -6,15 +6,15 @@ use Symfony\Component\Process\ProcessBuilder;
 
 abstract class ProcessUtils {
 
-	public static function getCompassomatorWatcher($compassProjectRoot, $bundleMapFile, $bundlePublicMapFile) {
-		return self::getCompassomator('watch', $compassProjectRoot, $bundleMapFile, $bundlePublicMapFile);
+	public static function getCompassomatorWatcher($compassProjectRoot, $bundleMapFile, $bundlePublicMapFile, $verbosity) {
+		return self::getCompassomator('watch', $compassProjectRoot, $bundleMapFile, $bundlePublicMapFile, $verbosity);
 	}
 
-	public static function getCompassomatorCompiler($compassProjectRoot, $bundleMapFile, $bundlePublicMapFile) {
-		return self::getCompassomator('compile', $compassProjectRoot, $bundleMapFile, $bundlePublicMapFile);
+	public static function getCompassomatorCompiler($compassProjectRoot, $bundleMapFile, $bundlePublicMapFile, $verbosity) {
+		return self::getCompassomator('compile', $compassProjectRoot, $bundleMapFile, $bundlePublicMapFile, $verbosity);
 	}
 
-	public static function getCompass($compassProjectRoot) {
+	public static function getCompass($compassProjectRoot, $verbosity = 0) {
 		$builder = new ProcessBuilder([
 		                              'compass',
 		                              'clean'
@@ -24,7 +24,7 @@ abstract class ProcessUtils {
 		return $builder->getProcess();
 	}
 
-	public static function getAssetic($watch = false, $env = null) {
+	public static function getAssetic($watch = false, $env = null, $verbosity = 0) {
 		$builder = new ProcessBuilder([
 		                              'php',
 		                              'app/console',
@@ -34,6 +34,9 @@ abstract class ProcessUtils {
 		if($env !== null) {
 			$builder->add('--env')->add($env);
 		}
+		if($verbosity > 0) {
+			$builder->add('-'.str_repeat('v', $verbosity));
+		}
 
 		if($watch) {
 			$builder->add('--watch');
@@ -42,7 +45,7 @@ abstract class ProcessUtils {
 		return $builder->getProcess();
 	}
 
-	private static function getCompassomator($script, $compassProjectRoot, $bundleMapFile, $bundlePublicMapFile) {
+	private static function getCompassomator($script, $compassProjectRoot, $bundleMapFile, $bundlePublicMapFile, $verbosity = 0) {
 		$builder = new ProcessBuilder([
 		                              'ruby',
 		                              sprintf('%s/Ruby/lib/compassomator/%s.rb', __DIR__.'/..', $script),
@@ -50,6 +53,13 @@ abstract class ProcessUtils {
 		                              $bundleMapFile,
 		                              $bundlePublicMapFile
 		                              ]);
+
+		if($verbosity > 1) {
+			$builder->add('true');
+		}
+		else {
+			$builder->add('false');
+		}
 
 		return $builder->getProcess();
 	}

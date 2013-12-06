@@ -87,8 +87,8 @@ class ProcessRunner {
 		$publicDirs = $this->bundleFinder->findPublicBundleDirs();
 
 		// dump the bundle map (bundle name => bundle root) into a json file which is later used by the ruby side
-		file_put_contents($this->bundleMapFile, json_encode($this->compassImportPaths));
-		file_put_contents($this->bundlePublicMapFile, json_encode($publicDirs));
+		file_put_contents($this->bundleMapFile, json_encode($this->compassImportPaths, JSON_PRETTY_PRINT));
+		file_put_contents($this->bundlePublicMapFile, json_encode($publicDirs, JSON_PRETTY_PRINT));
 
 		$this->isPrepared = true;
 	}
@@ -139,14 +139,14 @@ class ProcessRunner {
 			$name = sprintf('compass-%s-watch', $bundleName);
 
 			// start watching for changes
-			$process = ProcessUtils::getCompassomatorWatcher($compassProjectRoot, $this->bundleMapFile, $this->bundlePublicMapFile);
+			$process = ProcessUtils::getCompassomatorWatcher($compassProjectRoot, $this->bundleMapFile, $this->bundlePublicMapFile, $this->output->getVerbosity());
 			$this->output->write(sprintf('  > compass watch: <info>%s</info>', $bundleName));
 			$pid = $this->processManager->run($process, $name);
 			$this->output->writeln(sprintf(' (PID: %d)', $pid));
 		}
 
 		// run assetic:watch
-		$process = ProcessUtils::getAssetic(true);
+		$process = ProcessUtils::getAssetic(true, $this->output->getVerbosity());
 		$this->output->write('  > assetic watch');
 		$pid = $this->processManager->run($process, 'assetic-watch');
 		$this->output->writeln(sprintf(' (PID: %d)', $pid));
@@ -159,7 +159,7 @@ class ProcessRunner {
 
 			$this->output->writeln(sprintf('  > compass compile: <info>%s</info>', $bundleName));
 			$logFile = $this->processManager->getLogFile($name);
-			$process = ProcessUtils::getCompassomatorCompiler($compassProjectRoot, $this->bundleMapFile, $this->bundlePublicMapFile);
+			$process = ProcessUtils::getCompassomatorCompiler($compassProjectRoot, $this->bundleMapFile, $this->bundlePublicMapFile, $this->output->getVerbosity());
 			$process->run();
 			file_put_contents($logFile, $process->getOutput() . "\n" . $process->getErrorOutput());
 		}
@@ -167,7 +167,7 @@ class ProcessRunner {
 		// dump the assets once (because :watch only dumps the assets when a asset is changed when it runs)
 		$this->output->writeln('  > assetic dump');
 		$logFile = $this->processManager->getLogFile('assetic-dump');
-		$process = ProcessUtils::getAssetic(false, $this->env);
+		$process = ProcessUtils::getAssetic(false, $this->env, $this->output->getVerbosity());
 		$process->run();
 		file_put_contents($logFile, $process->getOutput() . "\n" . $process->getErrorOutput());
 	}
@@ -177,7 +177,7 @@ class ProcessRunner {
 		{
 			$this->output->writeln(sprintf('Compass clean: <info>%s</info>', $bundleName));
 
-			$compass = ProcessUtils::getCompass($compassProjectRoot);
+			$compass = ProcessUtils::getCompass($compassProjectRoot, $this->output->getVerbosity());
 			$compass->run();
 
 			$compassResult = $compass->getOutput()."\n".$compass->getErrorOutput();
