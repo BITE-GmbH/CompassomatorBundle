@@ -1,11 +1,5 @@
 parameters:
     asoc_compassomator.bundle_finder.class: Asoc\CompassomatorBundle\Compassomator\BundleFinder
-    asoc_compassomator.bundle_finder.config_rb_dir: Resources
-    asoc_compassomator.bundle_finder.config_rb_name: config.rb
-    asoc_compassomator.bundle_finder.bundles_dir: %kernel.root_dir%/../web/bundles/
-    # the directory where the css/js/image files that go through assetic using the twig helper functions
-    # is hard coded in \Symfony\Bundle\AsseticBundle\Factory\Loader\AsseticHelperFormulaLoader
-    asoc_compassomator.bundle_finder.assetic_css_root: %assetic.write_to%/css
     asoc_compassomator.process_manager.class: Asoc\CompassomatorBundle\Compassomator\ProcessManager
     asoc_compassomator.process_manager.run_dir: %kernel.cache_dir%/../compassomator
     asoc_compassomator.process_runner.class: Asoc\CompassomatorBundle\Compassomator\ProcessRunner

@@ -146,7 +146,7 @@ class ProcessRunner {
 		}
 
 		// run assetic:watch
-		$process = ProcessUtils::getAssetic(true, $this->output->getVerbosity());
+		$process = ProcessUtils::getAssetic(true, $this->env, $this->output->getVerbosity());
 		$this->output->write('  > assetic watch');
 		$pid = $this->processManager->run($process, 'assetic-watch');
 		$this->output->writeln(sprintf(' (PID: %d)', $pid));

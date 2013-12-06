@@ -20,9 +20,17 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('asoc_compassomator');
 
-        // Here you should define the parameters that are allowed to
-        // configure your bundle. See the documentation linked above for
-        // more information on that topic.
+        $rootNode
+	        ->children()
+	            ->scalarNode('config_rb_dir')->defaultValue('Resources')->end()
+	            ->scalarNode('config_rb_name')->defaultValue('config.rb')->end()
+	            ->scalarNode('bundles_public_dir')->defaultValue('%kernel.root_dir%/../web/bundles')->end()
+		        // the directory where the css/js/image files that go through assetic using the twig helper functions
+		        // is actually hard coded in \Symfony\Bundle\AsseticBundle\Factory\Loader\AsseticHelperFormulaLoader
+	            // but well, for the sake of configurability :D
+	            ->scalarNode('assetic_css_dir')->defaultValue('%assetic.write_to%/css')
+            ->end()
+        ;
 
         return $treeBuilder;
     }
