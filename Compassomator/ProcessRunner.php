@@ -5,6 +5,7 @@ namespace Asoc\CompassomatorBundle\Compassomator;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Process\Process;
 
 class ProcessRunner {
 
@@ -153,6 +154,7 @@ class ProcessRunner {
 	}
 
 	public function compileProjects() {
+		$that = $this;
 		foreach ($this->compassProjectRoots as $bundleName => $compassProjectRoot)
 		{
 			$name = sprintf('compass-%s-compile', $bundleName);
@@ -160,7 +162,9 @@ class ProcessRunner {
 			$this->output->writeln(sprintf('  > compass compile: <info>%s</info>', $bundleName));
 			$logFile = $this->processManager->getLogFile($name);
 			$process = ProcessUtils::getCompassomatorCompiler($compassProjectRoot, $this->bundleMapFile, $this->bundlePublicMapFile, $this->output->getVerbosity());
-			$process->run();
+			$process->run(function ($type, $buffer) use(&$that) {
+				$that->writeCompassOutput($buffer);
+			});
 			file_put_contents($logFile, $process->getOutput() . "\n" . $process->getErrorOutput());
 		}
 
@@ -173,20 +177,15 @@ class ProcessRunner {
 	}
 
 	public function cleanProjects() {
+		$that = $this;
 		foreach ($this->compassProjectRoots as $bundleName => $compassProjectRoot)
 		{
-			$this->output->writeln(sprintf('Compass clean: <info>%s</info>', $bundleName));
+			$this->output->writeln(sprintf('  > compass clean: <info>%s</info>', $bundleName));
 
 			$compass = ProcessUtils::getCompass($compassProjectRoot, $this->output->getVerbosity());
-			$compass->run();
-
-			$compassResult = $compass->getOutput()."\n".$compass->getErrorOutput();
-			if(strlen(trim($compassResult)) === 0) {
-				$this->output->writeln('  > Nothing to clean');
-			}
-			else {
-				$this->output->write($compassResult);
-			}
+			$compass->run(function ($type, $buffer) use(&$that) {
+				$that->writeCompassOutput($buffer);
+			});
 		}
 	}
 
@@ -209,6 +208,21 @@ class ProcessRunner {
 		}
 		if(file_exists($this->bundlePublicMapFile)) {
 			unlink($this->bundlePublicMapFile);
+		}
+	}
+
+	private function writeCompassOutput($output) {
+		// to check if the line is empty, the bash color codes need to be removed
+		// we don't change the buffer itself so we can output the colors too later on if the line is
+		// really not empty
+		// http://unix.stackexchange.com/questions/55546/removing-color-codes-from-output
+		if(strlen(trim(preg_replace('/\x1B\[[0-9;]*[JKmsu]/', '', $output))) === 0) {
+			return;
+		}
+		// we need to ltrim again so the indentation by compass is removed and all lines have the same indent
+		// this is solely cosmetic and doesn't serve any higher purpose :D
+		foreach(explode("\n", $output) as $line) {
+			$this->output->writeln(sprintf('    %s', trim($line)));
 		}
 	}
 }
