@@ -35,6 +35,7 @@ services:
         arguments:
             - @asoc_compassomator.bundle_finder
             - @asoc_compassomator.process_manager
+            - %kernel.environment%
     asoc_compassomator.bundle_finder:
         class: %asoc_compassomator.bundle_finder.class%
         arguments:

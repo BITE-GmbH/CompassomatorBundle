@@ -50,10 +50,17 @@ class ProcessRunner {
 	 */
 	private $output;
 
-	public function __construct(BundleFinder $bundleFinder, ProcessManager $processManager)
+	/**
+	 * Kernel environment
+	 * @var string
+	 */
+	private $env;
+
+	public function __construct(BundleFinder $bundleFinder, ProcessManager $processManager, $env = null)
 	{
 		$this->bundleFinder        = $bundleFinder;
 		$this->processManager      = $processManager;
+		$this->env = $env;
 
 		$runDir = $processManager->getRunDir();
 		$this->bundleMapFile = $runDir.'/bundlemap.json';
@@ -160,7 +167,7 @@ class ProcessRunner {
 		// dump the assets once (because :watch only dumps the assets when a asset is changed when it runs)
 		$this->output->writeln('  > assetic dump');
 		$logFile = $this->processManager->getLogFile('assetic-dump');
-		$process = ProcessUtils::getAssetic(false);
+		$process = ProcessUtils::getAssetic(false, $this->env);
 		$process->run();
 		file_put_contents($logFile, $process->getOutput() . "\n" . $process->getErrorOutput());
 	}

@@ -24,12 +24,16 @@ abstract class ProcessUtils {
 		return $builder->getProcess();
 	}
 
-	public static function getAssetic($watch = false) {
+	public static function getAssetic($watch = false, $env = null) {
 		$builder = new ProcessBuilder([
 		                              'php',
 		                              'app/console',
 		                              'assetic:dump'
 		                              ]);
+
+		if($env !== null) {
+			$builder->add('--env')->add($env);
+		}
 
 		if($watch) {
 			$builder->add('--watch');
