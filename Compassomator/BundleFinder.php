@@ -63,7 +63,7 @@ class BundleFinder {
 		$importPaths = $this->findImportPaths();
 
 		// TODO make the compassConfig directory and file name configurable
-		$projectRoots = [];
+		$projectRoots = array();
 		foreach($importPaths as $bundleName => $bundleRoot) {
 			$compassConfig = $this->getCompassConfigPathForBundle($bundleRoot);
 
@@ -82,7 +82,7 @@ class BundleFinder {
 	 */
 	public function findImportPaths()
 	{
-		$importPaths = [];
+		$importPaths = array();
 		foreach ($this->kernel->getBundles() as $bundle)
 		{
 			$bundleName = $bundle->getName();
@@ -104,7 +104,7 @@ class BundleFinder {
 	 * @return array
 	 */
 	public function findPublicBundleDirs() {
-		$publicDirs = [];
+		$publicDirs = array();
 		foreach ($this->kernel->getBundles() as $bundle) {
 			$bundleName = $bundle->getName();
 			$bundlePath = $bundle->getPath();

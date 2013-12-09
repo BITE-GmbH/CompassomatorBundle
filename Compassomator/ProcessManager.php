@@ -99,7 +99,7 @@ class ProcessManager {
 			->in($this->runDir)
 			->name('*.pid');
 
-		$pids = [];
+		$pids = array();
 		foreach($remainingPids as $pidFile) {
 			if(($pid = $this->killByPidFile($pidFile)) !== false) {
 				$pids[] = $pid;
