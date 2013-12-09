@@ -211,18 +211,23 @@ class ProcessRunner {
 		}
 	}
 
+	/**
+	 * Used to normalize and format indentation of compass output. Cosmetic stuff only!
+	 * @param $output
+	 */
 	private function writeCompassOutput($output) {
 		// to check if the line is empty, the bash color codes need to be removed
-		// we don't change the buffer itself so we can output the colors too later on if the line is
-		// really not empty
+		// we don't change the buffer itself so we can output the colors too later on if the line is really not empty
 		// http://unix.stackexchange.com/questions/55546/removing-color-codes-from-output
 		if(strlen(trim(preg_replace('/\x1B\[[0-9;]*[JKmsu]/', '', $output))) === 0) {
 			return;
 		}
-		// we need to ltrim again so the indentation by compass is removed and all lines have the same indent
-		// this is solely cosmetic and doesn't serve any higher purpose :D
+
+		// remove the whitespace before the actions executed by compass
+		// so far there is remove/unchanged/create. because of the bash color codes before the actions and whitespace,
+		// simply using trim() doesn't work. this is solely cosmetic and doesn't serve any higher purpose :D
 		foreach(explode("\n", $output) as $line) {
-			$this->output->writeln(sprintf('    %s', trim($line)));
+			$this->output->writeln(sprintf('    %s', preg_replace('/\s+(remove|unchanged|create)/', '\1', $line)));
 		}
 	}
 }
