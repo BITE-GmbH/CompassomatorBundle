@@ -37,8 +37,6 @@ class CompileCommand extends ContainerAwareCommand
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$this->processRunner->prepare($output);
-
-		$output->writeln('<info>Compile all the things...</info>');
 		$this->processRunner->compileProjects();
 	}
 
