@@ -6,12 +6,19 @@ A bundle to simplify the development with Compass/SASS with symfony2 bundles. It
 Use compass to manage every bundle as a standalone project and use a special file importer to reference assets in other bundles. The generated CSS files are then referenced in Assetic.
 
 # Requirements
-- PHP 5.4+
-- [AsseticBundle](https://packagist.org/packages/symfony/assetic-bundle)
+Any Symfony2 2.3+ application will do.
 
 # Installation
 ```bash
 composer require asoc/compassomator-bundle
+```
+
+# Configuration
+The compassomator is also able to trigger *assetic:dump* and *assetic:dump --watch* (*assetic:watch* respectively) if it is desired. To enable it, set the following option:
+
+```yaml
+asoc_compassomator:
+	manage_assetic: true
 ```
 
 # Quick Setup
@@ -43,6 +50,12 @@ Any generated CSS file will be places inside the bundles *Resources/public/css* 
 app/console compassomator:compile
 ```
 
+If assetic is not run automatically (manage_assetic: true), dumping the assets with assetic is also required:
+
+```bash
+app/console assetic:dump
+```
+
 5. Run compass watch and assetic dump in the background to automatically update the generated CSS.
 
 ```bash
@@ -50,6 +63,13 @@ app/console compassomator:compile
 app/console compassomator:watch
 # End
 app/console compassomator:watch --abort
+```
+
+If assetic is not run automatically (manage_assetic: true), watching the assets with assetic is also required:
+
+```bash
+app/console assetic:dump --watch (Symfony 2.3)
+app/console assetic:watch (Symfony 2.4+)
 ```
 
 6. Show logs
@@ -63,8 +83,8 @@ app/console compassomator:logs
 # Notes
 - At the moment, cache:clear will trigger the compassomator:compile command once, so it will take a few seconds longer on a cache:clear by default.
 
-# Credits
-Pascal Kuendig <padakuro@gmail.com>
+# Contribution
+Whatever is on your mind, open an issue or a pull request (be it a bug/typo/feature request/code improvement...) :)
 
 # License
 MIT

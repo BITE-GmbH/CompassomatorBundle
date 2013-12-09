@@ -1,7 +1,7 @@
 {
 	"name": "asoc/compassomator-bundle",
 	"type": "symfony-bundle",
-	"description": "Simplifies Compass/SASS development with symfony2 bundles",
+	"description": "Simplifies Compass/SASS development with Symfony2 bundles",
 	"keywords": ["compass", "sass", "scss"],
 	"homepage": "https://github.com/AStateOfCode/CompassomatorBundle",
 	"license": "MIT",
@@ -12,7 +12,7 @@
 		}
 	],
 	"require": {
-		"php": ">=5.4.0"
+		"symfony/symfony": "~2.3"
 	},
 	"minimum-stability": "dev",
 	"autoload": {
