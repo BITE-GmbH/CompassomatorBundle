@@ -28,7 +28,8 @@ class Configuration implements ConfigurationInterface
 		        // the directory where the css/js/image files that go through assetic using the twig helper functions
 		        // is actually hard coded in \Symfony\Bundle\AsseticBundle\Factory\Loader\AsseticHelperFormulaLoader
 	            // but well, for the sake of configurability :D
-	            ->scalarNode('assetic_css_dir')->defaultValue('%assetic.write_to%/css')
+	            ->scalarNode('assetic_css_dir')->defaultValue('%assetic.write_to%/css')->end()
+                ->scalarNode('manage_assetic')->defaultFalse()->end()
             ->end()
         ;
 

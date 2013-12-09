@@ -5,7 +5,6 @@ namespace Asoc\CompassomatorBundle\Compassomator;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Process\Process;
 
 class ProcessRunner {
 
@@ -50,17 +49,23 @@ class ProcessRunner {
 	 * @var OutputInterface
 	 */
 	private $output;
-
+	/**
+	 * Determines if the compassomator should also call assetic when required
+	 *
+	 * @var bool
+	 */
+	private $manageAssetic;
 	/**
 	 * Kernel environment
 	 * @var string
 	 */
 	private $env;
 
-	public function __construct(BundleFinder $bundleFinder, ProcessManager $processManager, $env = null)
+	public function __construct(BundleFinder $bundleFinder, ProcessManager $processManager, $manageAssetic = false, $env = null)
 	{
 		$this->bundleFinder        = $bundleFinder;
 		$this->processManager      = $processManager;
+		$this->manageAssetic = $manageAssetic;
 		$this->env = $env;
 
 		$runDir = $processManager->getRunDir();
@@ -112,7 +117,8 @@ class ProcessRunner {
 			}
 		}
 
-		// stop assetc watch
+		// we don't check if we manage assetic in case the setting changed in between
+		// stop assetic watch
 		$this->output->write('  > assetic watch');
 		$pid = $this->processManager->kill('assetic-watch');
 
@@ -146,14 +152,18 @@ class ProcessRunner {
 			$this->output->writeln(sprintf(' (PID: %d)', $pid));
 		}
 
-		// run assetic:watch
-		$process = ProcessUtils::getAssetic(true, $this->env, $this->output->getVerbosity());
-		$this->output->write('  > assetic watch');
-		$pid = $this->processManager->run($process, 'assetic-watch');
-		$this->output->writeln(sprintf(' (PID: %d)', $pid));
+		if($this->manageAssetic) {
+			// run assetic:watch
+			$process = ProcessUtils::getAssetic(true, $this->env, $this->output->getVerbosity());
+			$this->output->write('  > assetic watch');
+			$pid = $this->processManager->run($process, 'assetic-watch');
+			$this->output->writeln(sprintf(' (PID: %d)', $pid));
+		}
 	}
 
 	public function compileProjects() {
+		$this->output->writeln('<info>Compile all the things...</info>');
+
 		$that = $this;
 		foreach ($this->compassProjectRoots as $bundleName => $compassProjectRoot)
 		{
@@ -168,15 +178,19 @@ class ProcessRunner {
 			file_put_contents($logFile, $process->getOutput() . "\n" . $process->getErrorOutput());
 		}
 
-		// dump the assets once (because :watch only dumps the assets when a asset is changed when it runs)
-		$this->output->writeln('  > assetic dump');
-		$logFile = $this->processManager->getLogFile('assetic-dump');
-		$process = ProcessUtils::getAssetic(false, $this->env, $this->output->getVerbosity());
-		$process->run();
-		file_put_contents($logFile, $process->getOutput() . "\n" . $process->getErrorOutput());
+		if($this->manageAssetic) {
+			// dump the assets once (because :watch only dumps the assets when a asset is changed when it runs)
+			$this->output->writeln('  > assetic dump');
+			$logFile = $this->processManager->getLogFile('assetic-dump');
+			$process = ProcessUtils::getAssetic(false, $this->env, $this->output->getVerbosity());
+			$process->run();
+			file_put_contents($logFile, $process->getOutput() . "\n" . $process->getErrorOutput());
+		}
 	}
 
 	public function cleanProjects() {
+		$this->output->writeln('<info>Cleaning...</info>');
+
 		$that = $this;
 		foreach ($this->compassProjectRoots as $bundleName => $compassProjectRoot)
 		{
@@ -191,7 +205,7 @@ class ProcessRunner {
 
 	public function cleanLogs()
 	{
-		$this->output->writeln('Cleaning logs and temporary files...');
+		$this->output->writeln('  > Logs and temporary files...');
 
 		$finder = new Finder();
 		$logs = $finder

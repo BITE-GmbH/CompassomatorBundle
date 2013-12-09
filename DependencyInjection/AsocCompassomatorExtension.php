@@ -26,6 +26,7 @@ class AsocCompassomatorExtension extends Extension
 	    $container->setParameter('asoc_compassomator.bundle_finder.config_rb_name', $config['config_rb_name']);
 	    $container->setParameter('asoc_compassomator.bundle_finder.bundles_dir', $config['bundles_public_dir']);
 	    $container->setParameter('asoc_compassomator.bundle_finder.assetic_css_root', $config['assetic_css_dir']);
+	    $container->setParameter('asoc_compassomator.process_runner.manage_assetic', $config['manage_assetic']);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
 	    $loader->load('services.yml');
