@@ -80,6 +80,9 @@ To view any errors, compass or assetic, the logs can be shown using the logs com
 app/console compassomator:logs
 ```
 
+# Thanks
+Made possible by [Bite GmbH](https://www.b-ite.de) as a side project during my master thesis.
+
 # Notes
 - At the moment, cache:clear will trigger the compassomator:compile command once, so it will take a few seconds longer on a cache:clear by default.
 
