@@ -16,7 +16,7 @@ verbose = ARGV[3] == 'true'
 # TODO: check if given bundle map file paths exist
 
 def parse_bundle_map(file)
-    return JSON.parse(File.read(file))
+    JSON.parse(File.read(file))
 end
 
 if verbose
@@ -25,10 +25,10 @@ if verbose
 	puts "Project root       : #{project_root}"
 end
 
-puts "Bundle importer    :" unless not verbose
+puts "Bundle importer    :" if verbose
 bundle_map = parse_bundle_map(bundle_map_file)
 bundle_map.each_pair do |bundle_name, bundle_root|
-	puts "  > #{bundle_name} => #{bundle_root}" unless not verbose
+	puts "  > #{bundle_name} => #{bundle_root}" if verbose
 	Sass.load_paths << Sass::Importers::SymfonyImporter.new(bundle_root, bundle_name)
 end
 
