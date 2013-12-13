@@ -6,7 +6,12 @@ A bundle to simplify the development with Compass/SASS and symfony2 bundles. It 
 Use compass to manage every bundle as a standalone project and use a special file importer to reference assets in other bundles. The generated CSS files are then referenced in Assetic.
 
 # Requirements
-Any Symfony2 2.3+ application will do.
+Any Symfony2 2.3+ application will do. You will also need Ruby with rubygems installed and the following gems:
+
+```shell
+gem install json
+gem install compass
+```
 
 # Installation
 ```shell
