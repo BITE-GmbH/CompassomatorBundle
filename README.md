@@ -14,8 +14,19 @@ gem install compass
 ```
 
 # Installation
+
+Install the bundle via composer.
+
 ```shell
 composer require asoc/compassomator-bundle
+```
+
+Enable it in your AppKernel.php
+
+```php
+if (in_array($this->getEnvironment(), ['dev'])) {
+	$bundles[] = Asoc\CompassomatorBundle\AsocCompassomatorBundle();
+}
 ```
 
 # Configuration
